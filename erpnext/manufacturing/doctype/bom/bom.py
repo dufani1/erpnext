@@ -158,7 +158,7 @@ class BOM(WebsiteGenerator):
 					if not self.buying_price_list:
 						frappe.throw(_("Please select Price List"))
 					rate = frappe.db.get_value("Item Price", {"price_list": self.buying_price_list,
-						"item_code": arg["item_code"]}, "price_list_rate")
+						"item_code": arg["item_code"]}, "price_list_rate") or 0.0
 
 					price_list_currency = frappe.db.get_value("Price List",
 						self.buying_price_list, "currency")
@@ -600,6 +600,9 @@ def validate_bom_no(item, bom_no):
 	if item:
 		rm_item_exists = False
 		for d in bom.items:
+			if (d.item_code.lower() == item.lower()):
+				rm_item_exists = True
+		for d in bom.scrap_items:
 			if (d.item_code.lower() == item.lower()):
 				rm_item_exists = True
 		if bom.item.lower() == item.lower() or \
